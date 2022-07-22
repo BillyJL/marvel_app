@@ -1,13 +1,16 @@
-import { useState, useEffect } from 'react';
+import {useState, useEffect} from 'react';
+import { Link } from 'react-router-dom';
 
+import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spiner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
-import useMarvelService from '../../services/MarvelService';
+
 import './comicsList.scss';
 
 const ComicsList = () => {
+
     const [comicsList, setComicsList] = useState([]);
-    const [newItemLoading, setNewItemLoading] = useState(false);
+    const [newItemLoading, setnewItemLoading] = useState(false);
     const [offset, setOffset] = useState(0);
     const [comicsEnded, setComicsEnded] = useState(false);
 
@@ -18,7 +21,7 @@ const ComicsList = () => {
     }, [])
 
     const onRequest = (offset, initial) => {
-        initial ? setNewItemLoading(false) : setNewItemLoading(true);
+        initial ? setnewItemLoading(false) : setnewItemLoading(true);
         getAllComics(offset)
             .then(onComicsListLoaded)
     }
@@ -28,10 +31,9 @@ const ComicsList = () => {
         if (newComicsList.length < 8) {
             ended = true;
         }
-
-        setComicsList(comicsList => [...comicsList, ...newComicsList]);
-        setNewItemLoading(false);
-        setOffset(offset => offset + 8);
+        setComicsList([...comicsList, ...newComicsList]);
+        setnewItemLoading(false);
+        setOffset(offset + 8);
         setComicsEnded(ended);
     }
 
@@ -39,11 +41,11 @@ const ComicsList = () => {
         const items = arr.map((item, i) => {
             return (
                 <li className="comics__item" key={i}>
-                    <a href="#">
+                    <Link to={`/comics/${item.id}`}>
                         <img src={item.thumbnail} alt={item.title} className="comics__item-img"/>
                         <div className="comics__item-name">{item.title}</div>
                         <div className="comics__item-price">{item.price}</div>
-                    </a>
+                    </Link>
                 </li>
             )
         })
@@ -58,7 +60,7 @@ const ComicsList = () => {
     const items = renderItems(comicsList);
 
     const errorMessage = error ? <ErrorMessage/> : null;
-    const spinner = loading && !setNewItemLoading ? <Spinner/> : null;
+    const spinner = loading && !newItemLoading ? <Spinner/> : null;
 
     return (
         <div className="comics__list">
